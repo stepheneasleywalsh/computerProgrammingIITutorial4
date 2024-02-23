@@ -79,7 +79,7 @@ while True:
 # Graph
 xValues = t1
 yValues = P
-p.title("Power")
+p.title("Power Graph")
 p.xlabel(nameTime1)
 p.ylabel("Watts")
 p.plot(xValues,yValues, linestyle="dotted", color="red", linewidth="2")
@@ -87,5 +87,9 @@ p.grid()
 p.axhline()
 p.axvline()
 p.show()
+
+# Average Power
+average = sum(P)/len(P)
+print("Average power is", average, "Watts")
 
 quit()
