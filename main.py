@@ -1,95 +1,72 @@
-import os
+# THIS IS MY ANSWER ONLY
+# THERE ARE OTHER THINGS YOU COULD ADD TO MAKE IT
+# BETTER BUT THIS IS A MINIMUM WORKING PROGRAM
+# SO I AM HAPPY WITH IT
+
 import csv
-import matplotlib.pyplot as p
+import matplotlib.pyplot as plt
+import os
 
-while True:
-    # Ask for file name
-    file1 = input("Type in the name of the VOLT CSV file: ")
-    file2 = input("Type in the name of the CURRENT CSV file: ")
-    n = 0 # Counts the found files
+# First ask for the file name of voltages
+V = input("Filename of the voltages: ")
+if os.path.exists(V+".csv"):
+    V = V + ".csv"
+while not os.path.exists(V):
+    print("Oh, sorry I can't find that file, try again")
+    V = input("Filename of the voltages: ")
+    if os.path.exists(V + ".csv"):
+        V = V + ".csv"
 
-    # Look for file1, add CSV to name if they don't type it
-    if ".csv" in file1:
-        if os.path.exists(file1):
-            print("File Found")
-            n += 1
-    elif ".csv" not in file1:
-        file1 = file1 + ".csv"
-        if os.path.exists(file1):
-            print("File Found (I added the CSV in)")
-            n += 1
+# Second ask for the file name of currents
+I = input("Filename of the currents: ")
+if os.path.exists(I+".csv"):
+    I = I + ".csv"
+while not os.path.exists(V):
+    print("Oh, sorry I can't find that file, try again")
+    I = input("Filename of the voltages: ")
+    if os.path.exists(I + ".csv"):
+        I = I + ".csv"
 
-    # Look for file2, add CSV to name if they don't type it
-    if ".csv" in file2:
-        if os.path.exists(file1):
-            print("File Found")
-            n += 1
-    elif ".csv" not in file2:
-        file2 = file2 + ".csv"
-        if os.path.exists(file1):
-            print("File Found (I added the CSV in)")
-            n += 1
-    if n == 2:
-        # Two files are found so break out of the loop
-        print("Loading files....")
-        break
-    else:
-        print("Try again, please use FULL PATH NAMES if the files are not local.")
+# Open the voltages
+with open(V, encoding="utf-8-sig") as f:
+    readFile = csv.reader(f)
+    voltages = []
+    time = []
+    skip = True
+    for line in readFile:
+        if skip:
+            skip = False
+        else:
+            time.append(int(line[0]))
+            voltages.append(int(line[1]))
 
-# Read those files
-t1 = []
-V = []
-t2 = []
-I = []
-with open(file1,encoding='utf-8-sig') as f1:
-    csvRead1 = csv.reader(f1)
-    for row in csvRead1:
-        t1.append(row[0])
-        V.append(row[1])
-nameTime1 = t1.pop(0)
-nameVolt = V.pop(0)
+# Open the currents
+with open(I, encoding="utf-8-sig") as f:
+    readFile = csv.reader(f)
+    currents = []
+    time = []
+    skip = True
+    for line in readFile:
+        if skip:
+            skip = False
+        else:
+            time.append(int(line[0]))
+            currents.append(int(line[1]))
 
-with open(file2,encoding='utf-8-sig') as f2:
-    csvRead2 = csv.reader(f2)
-    for row in csvRead2:
-        t2.append(row[0])
-        I.append(row[1])
-nameTime2 = t2.pop(0)
-nameCurrent = I.pop(0)
-
-# Check Time is okay
-if not nameTime1 == nameTime2:
-    print("Error in files, time name not the same")
-    quit()
-
-if not t1 == t2:
-    print("Error time stamps not the same")
-    quit()
-
-# Make the graph
-P = []
-n = 0
-while True:
-    try:
-        P.append(float(V[n])*float(I[n]))
-        n+= 1
-    except:
-        break
+# Calculate the power
+powers = []
+for n in range(0,len(time)):
+    p = voltages[n]*currents[n]
+    powers.append(p)
 
 # Graph
-xValues = t1
-yValues = P
-p.title("Power Graph")
-p.xlabel(nameTime1)
-p.ylabel("Watts")
-p.plot(xValues,yValues, linestyle="dotted", color="red", linewidth="2")
-p.grid()
-p.axhline()
-p.axvline()
-p.show()
+plt.plot(time,powers)
+plt.title("Power Vs Time")
+plt.xlabel("Time / ms")
+plt.ylabel("Power / W")
+plt.axhline(color="red")
+plt.axvline(color="red")
+plt.show()
 
-# Average Power
-average = sum(P)/len(P)
-print("Average power is", average, "Watts")
-
-quit()
+# Calculate the average power
+print("Average Power:", sum(powers)/len(powers),"W")
